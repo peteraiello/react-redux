@@ -1,6 +1,13 @@
 "use client"
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 
+
+/**
+ * Example of when you will use useMemo
+ * 1. When you have a super slow function
+ * 2. Referrential equality: only update the 
+ * reference of the object when it's changed
+ */
 export default function Home() {
   const [number, setNumber] = useState(0);
 
@@ -23,14 +30,36 @@ export default function Home() {
     * number has remained the same. 
     */}
   const doubleNumber = useMemo(() => {
-    console.log("slow function called!")
     return slowFunction(number)
-  }, [number])
+  }, [number]);
 
-  const themeStyles = {
-    backgroundColor: dark ? 'black' : 'white',
-    color: dark ? 'white' : 'black'
-  }
+
+  /**
+   * Now when add 'useMemo' to theme styles
+   * it's only going to log when we update 
+   * to dark theme, and not when the input 
+   * value changes! It will save it by default
+   * and won't update it. 
+   */
+  const themeStyles = useMemo(() => {
+    return {
+     backgroundColor: dark ? 'black' : 'white',
+     color: dark ? 'white' : 'black'
+    }
+  }, [dark]);
+  /**
+   * We add 'themeStyles' into our 
+   * dependency array for themeStyles.
+   * Even when we change the input, 
+   * it still logs out 'Theme changed'. 
+   * Its a 'new' theme style object. 
+   * But what we really want, is to only 
+   * log 'Theme changed' when are theme 
+   * styles have been updated. 
+   */
+  useEffect(() => {
+    console.log('Theme changed')
+  }, [themeStyles]);
 
   return (
     <div>
@@ -65,7 +94,7 @@ export default function Home() {
  * of 1 - 2 seconds.
  */
 function slowFunction(num: number) {
-  console.log("calling a very slow function");
+  // console.log("calling a very slow function");
   for (let i = 0; i <= 1000000; i++) {
     for (let y = 0; y <= 1000; y++) {
     }
