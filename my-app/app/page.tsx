@@ -7,6 +7,8 @@ import React, { useState, useMemo, useEffect } from "react"
  * 1. When you have a super slow function
  * 2. Referrential equality: only update the 
  * reference of the object when it's changed
+ * URL: https://www.youtube.com/watch?v=THL1OPn72vo
+ * Accessed: 07/02/2026
  */
 export default function Home() {
   const [number, setNumber] = useState(0);
