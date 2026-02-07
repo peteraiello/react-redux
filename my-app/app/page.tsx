@@ -1,65 +1,77 @@
-import Image from "next/image";
+"use client"
+import React, { useState, useMemo } from "react"
 
 export default function Home() {
+  const [number, setNumber] = useState(0);
+
+  const [dark, setDark] = useState(false);
+  
+  {/**
+    * Much like with our useEffect hook, 
+    * useMemo will accept a variable 
+    * in the dependency array, i.e. [number] 
+    * and the useMemo hook will only 
+    * if the value changes. 
+    */}
+  {/**
+    * With useMemo up and running, 
+    * we can change the value of the input
+    * and the application will still experience 
+    * a delay. However, if we click on change theme
+    * we will no longer see the delay,
+    * it will be instantaneous because 
+    * number has remained the same. 
+    */}
+  const doubleNumber = useMemo(() => {
+    console.log("slow function called!")
+    return slowFunction(number)
+  }, [number])
+
+  const themeStyles = {
+    backgroundColor: dark ? 'black' : 'white',
+    color: dark ? 'white' : 'black'
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div>
+        <input type="number" value={number} onChange={e => setNumber(parseInt(e.target.value))} />
+
+       {/** Even when your changing the dark theme,
+        * your still going to experience a delay. 
+        * This is because updating state is going to 
+        * cause a react re-render, it's going to go 
+        * through the entire component, line by line. 
+        */}
+        {/**
+         * To solve this problem, you can bring in the 
+         * 'useMemo' hook, which will help with 'memoization',
+         * where the value will be cached. 
+         * Using 'useMemo' on slowFunction, if the input doesn't 
+         * change, we're not going to recalculate the number over 
+         * and over again. 
+         */}
+      <button onClick={() => setDark(prevDark => !prevDark)}>Change Theme</button>
+      
+      <div style={themeStyles}>{doubleNumber}</div>
     </div>
   );
+}
+
+/**
+ * A very very slow function 
+ * featuring a nest for loop. 
+ * When you call the function, 
+ * you should see a visible delay
+ * of 1 - 2 seconds.
+ */
+function slowFunction(num: number) {
+  console.log("calling a very slow function");
+  for (let i = 0; i <= 1000000; i++) {
+    for (let y = 0; y <= 1000; y++) {
+    }
+  }
+  /**
+   * 
+   */
+  return num * 2;
 }
