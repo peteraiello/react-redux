@@ -76,3 +76,34 @@ Description: Stores a value that persists across re-renders without triggering n
 ```
     const inputElem = useRef()
 ```
+
+# Redux 
+
+Key concepts: 
+1. Store = holds the state
+2. Actions = describe what happened (increment, decrement)
+3. Reducer = function that takes the current state and action, returns new state (switch statement pattern)
+
+Example of a coding pattern for redux style counter 
+
+```
+// Action types
+const INCREMENT = 'INCREMENT';
+const DECREMENT = 'DECREMENT';
+
+// Reducer
+const counterReducer = (state = 0, action) => {
+  switch(action.type) {
+    case INCREMENT:
+      return state + 1;
+    case DECREMENT:
+      return state - 1;
+    default:
+      return state;
+  }
+};
+
+// Actions (action creators)
+const increment = () => ({ type: INCREMENT });
+const decrement = () => ({ type: DECREMENT });
+```
