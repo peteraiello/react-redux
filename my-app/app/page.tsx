@@ -1,5 +1,5 @@
 "use client"
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 
 /**
  * The brief: Set up a login form and 
@@ -81,6 +81,10 @@ export default function Home() {
    * 
    */
   const [state, dispatch] = useReducer(reducer, InitialState);
+
+  useEffect(() => {
+    console.log("state", state);
+  }, [state])
 
   return (
     <div>
