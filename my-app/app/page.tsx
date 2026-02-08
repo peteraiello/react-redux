@@ -1,73 +1,76 @@
 "use client"
-import React, { useCallback, useState, useMemo, useEffect } from "react"
-import List from "./list";
+import React, {useEffect, useState, useRef} from 'react'
 
 /**
- * Remember! useMemo is the value returned from the function. 
- * i.e. if the function returns an array, useMemo returns the value 
- * of the array. useCallback is different! useCallback returns the 
- * entire function. 
- * Last accessed 07/02/2026
- * URL: https://www.youtube.com/watch?v=_AyFP5s69N4
+ * 
+ * Example of the useRef hook. 
+ * Here are some of the uses of the useRef hook. 
+ * 1. You can use it similar to state values, 
+ * however the difference is you can take it out of rendering cycle
+ * 2. You can use it manipulate the dom, almost similar 
+ * to how you would using JavaScript. So for example, 
+ * you can have an element and then target it with .current 
+ * 3. You can combine it with useEffect to track the previous 
+ * value of state. 
+ * URL: https://www.youtube.com/watch?v=t2ypzz6gJm0
+ * Accessed: 07/02/2026
  */
 export default function Home() {
 
-  const [number, setNumber] = useState(1);
-  
-  const [dark, setDark] = useState(false);
+  const [name, setName] = useState("");
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const prevName = useRef('');
 
   /**
-   * ORIGINAL FUNCTION:
-   * getItems which is a function 
-   * that returns an array of 3 
-   * incrementing numbers. 
+   * Use ref is very, very similar to state
+   * in the sense that you can change our reference
+   * and update values as many times as you want, 
+   * but it DOES NOT cause a re-render in the same 
+   * way that state does. 
    */
-  /*
-  const getItems = () => {
-    return [number, number + 1, number + 2]
-  }
-  */
+  // const renderCount = useRef(1);
 
   /**
-   * Now with useCallback, the useEffect 
-   * for gitItems is no longer called 
-   * when darkTheme changes. It will only 
-   * recreate when the number changes, it's
-   * not going to recreate when darkTheme changes
+   * The only way to log rerenders accurately
+   * is to use useRef. If you try and log re renders 
+   * using state, you'll just end up getting into infinite 
+   * loop territory and we don't want that 
    */
-  const getItems = useCallback(() => {
-     return [number, number + 1, number + 2]
-  }, [number])
- 
- 
+  // useEffect(() => {
+  //   renderCount.current = renderCount.current + 1;
+  // })
 
-  
-
-  const theme = {
-    backgroundColor: dark ? "#333" : "#FFF",
-    color: dark ? "#FFF" : "#333"
+  /**
+   * You can use useRef for dom manipulation. 
+   * if you log out the reference of inputRef.current
+   * then it will exactly the same as it when 
+   * you target an element in the dom using javascript. 
+   * It makes it incredibly easy to manipulate the dom 
+   * using useRef
+   */
+  function focus() {
+    console.log(inputRef.current);
+    inputRef.current && inputRef.current.focus();
   }
+  
+  /**
+   * One last cool thing that you can do with useRef
+   * is to store the previous version of state 
+   * and have that as a variable
+   */
+  useEffect(() => {
+    prevName.current = name
+  }, [name])
 
- 
   return (
-    <div style={theme}>
-      <input 
-        type="number"
-        value={number}
-        onChange={(e) => setNumber(parseInt(e.target.value))}
-      />
-      {/** 
-       * When we click on toggle for our theme, 
-       * it's also going to call the useEffect for 
-       * get items, which is a problem, that can be 
-       * fixed by the useCallback hook
-      */}
-      <button onClick={() => setDark(prevDark => !prevDark) }>
-        Toggle Theme 
-      </button>
-      <List getItems={getItems} />
-
+    <div>
+        <input ref={inputRef} value={name} onChange={e => setName(e.target.value)} />
+        <div>My name is {name}</div>
+        <div>My previous name is {prevName.current}</div>
+        <button onClick={focus}>Focus</button>
     </div>
-  );
+  )
 }
  
