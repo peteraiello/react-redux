@@ -1,108 +1,73 @@
 "use client"
-import React, { useState, useMemo, useEffect } from "react"
-
+import React, { useCallback, useState, useMemo, useEffect } from "react"
+import List from "./list";
 
 /**
- * Example of when you will use useMemo
- * 1. When you have a super slow function
- * 2. Referrential equality: only update the 
- * reference of the object when it's changed
- * URL: https://www.youtube.com/watch?v=THL1OPn72vo
- * Accessed: 07/02/2026
+ * Remember! useMemo is the value returned from the function. 
+ * i.e. if the function returns an array, useMemo returns the value 
+ * of the array. useCallback is different! useCallback returns the 
+ * entire function. 
+ * Last accessed 07/02/2026
+ * URL: https://www.youtube.com/watch?v=_AyFP5s69N4
  */
 export default function Home() {
-  const [number, setNumber] = useState(0);
 
-  const [dark, setDark] = useState(false);
+  const [number, setNumber] = useState(1);
   
-  {/**
-    * Much like with our useEffect hook, 
-    * useMemo will accept a variable 
-    * in the dependency array, i.e. [number] 
-    * and the useMemo hook will only 
-    * if the value changes. 
-    */}
-  {/**
-    * With useMemo up and running, 
-    * we can change the value of the input
-    * and the application will still experience 
-    * a delay. However, if we click on change theme
-    * we will no longer see the delay,
-    * it will be instantaneous because 
-    * number has remained the same. 
-    */}
-  const doubleNumber = useMemo(() => {
-    return slowFunction(number)
-  }, [number]);
-
+  const [dark, setDark] = useState(false);
 
   /**
-   * Now when add 'useMemo' to theme styles
-   * it's only going to log when we update 
-   * to dark theme, and not when the input 
-   * value changes! It will save it by default
-   * and won't update it. 
+   * ORIGINAL FUNCTION:
+   * getItems which is a function 
+   * that returns an array of 3 
+   * incrementing numbers. 
    */
-  const themeStyles = useMemo(() => {
-    return {
-     backgroundColor: dark ? 'black' : 'white',
-     color: dark ? 'white' : 'black'
-    }
-  }, [dark]);
-  /**
-   * We add 'themeStyles' into our 
-   * dependency array for themeStyles.
-   * Even when we change the input, 
-   * it still logs out 'Theme changed'. 
-   * Its a 'new' theme style object. 
-   * But what we really want, is to only 
-   * log 'Theme changed' when are theme 
-   * styles have been updated. 
-   */
-  useEffect(() => {
-    console.log('Theme changed')
-  }, [themeStyles]);
+  /*
+  const getItems = () => {
+    return [number, number + 1, number + 2]
+  }
+  */
 
+  /**
+   * Now with useCallback, the useEffect 
+   * for gitItems is no longer called 
+   * when darkTheme changes. It will only 
+   * recreate when the number changes, it's
+   * not going to recreate when darkTheme changes
+   */
+  const getItems = useCallback(() => {
+     return [number, number + 1, number + 2]
+  }, [number])
+ 
+ 
+
+  
+
+  const theme = {
+    backgroundColor: dark ? "#333" : "#FFF",
+    color: dark ? "#FFF" : "#333"
+  }
+
+ 
   return (
-    <div>
-        <input type="number" value={number} onChange={e => setNumber(parseInt(e.target.value))} />
+    <div style={theme}>
+      <input 
+        type="number"
+        value={number}
+        onChange={(e) => setNumber(parseInt(e.target.value))}
+      />
+      {/** 
+       * When we click on toggle for our theme, 
+       * it's also going to call the useEffect for 
+       * get items, which is a problem, that can be 
+       * fixed by the useCallback hook
+      */}
+      <button onClick={() => setDark(prevDark => !prevDark) }>
+        Toggle Theme 
+      </button>
+      <List getItems={getItems} />
 
-       {/** Even when your changing the dark theme,
-        * your still going to experience a delay. 
-        * This is because updating state is going to 
-        * cause a react re-render, it's going to go 
-        * through the entire component, line by line. 
-        */}
-        {/**
-         * To solve this problem, you can bring in the 
-         * 'useMemo' hook, which will help with 'memoization',
-         * where the value will be cached. 
-         * Using 'useMemo' on slowFunction, if the input doesn't 
-         * change, we're not going to recalculate the number over 
-         * and over again. 
-         */}
-      <button onClick={() => setDark(prevDark => !prevDark)}>Change Theme</button>
-      
-      <div style={themeStyles}>{doubleNumber}</div>
     </div>
   );
 }
-
-/**
- * A very very slow function 
- * featuring a nest for loop. 
- * When you call the function, 
- * you should see a visible delay
- * of 1 - 2 seconds.
- */
-function slowFunction(num: number) {
-  // console.log("calling a very slow function");
-  for (let i = 0; i <= 1000000; i++) {
-    for (let y = 0; y <= 1000; y++) {
-    }
-  }
-  /**
-   * 
-   */
-  return num * 2;
-}
+ 
